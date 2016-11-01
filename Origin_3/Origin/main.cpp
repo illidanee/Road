@@ -180,10 +180,10 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 3, vertex, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+	//计算参数位置
 	GLint posLocation, colorLocation, MLocation, VLocation, PLocation;
 	posLocation = glGetAttribLocation(program, "pos");
 	colorLocation = glGetAttribLocation(program, "color");
-
 	MLocation = glGetUniformLocation(program, "M");
 	VLocation = glGetUniformLocation(program, "V");
 	PLocation = glGetUniformLocation(program, "P");
