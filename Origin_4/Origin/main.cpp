@@ -69,7 +69,15 @@ GLuint CreateGPUProgram(const char* vsShaderPath, const char* fsShaderPath)
 
 LRESULT CALLBACK WinPro(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-
+	switch (msg)
+	{
+	case WM_CLOSE:
+		DestroyWindow(hWnd);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
@@ -211,7 +219,7 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	MSG msg;
 	while (true)
 	{
-		if (PeekMessage(&msg, hWnd, 0, 0, PM_REMOVE))
+		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
 			{
