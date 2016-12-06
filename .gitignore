@@ -1,5 +1,7 @@
 Origin.sdf
 Origin.VC.db
 Origin.VC.VC.opendb
+*.log
 .vs/
 x64/
+
