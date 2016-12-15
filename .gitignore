@@ -4,4 +4,5 @@ Origin.VC.VC.opendb
 *.log
 .vs/
 x64/
+Debug/
 

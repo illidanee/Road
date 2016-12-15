@@ -12,6 +12,8 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include "Misc.h"
+#include "Model.h"
 
 float identity[] = {
 	1, 0, 0, 0,
@@ -20,52 +22,8 @@ float identity[] = {
 	0, 0, 0, 1,
 };
 
-glm::mat4 projection = glm::perspective(45.0f, 1280.0f / 800.0f, 0.1f, 1000.0f);
-
-struct Vertex
-{
-	float pos[3];
-	float color[4];
-};
-
-const char* LoadFileContent(const char* path)
-{
-	FILE* pf = fopen(path, "rb");
-	if (pf == 0)
-		return 0;
-
-	fseek(pf, 0, SEEK_END);
-	long len = ftell(pf);
-	rewind(pf);
-	char* buffer = new char[len + 1];
-	fread(buffer, 1, len, pf);
-	buffer[len] = 0;
-	fclose(pf);
-
-	return buffer;
-}
-
-GLuint CreateGPUProgram(const char* vsShaderPath, const char* fsShaderPath)
-{
-	GLuint vsShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fsShader = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* vsCode = LoadFileContent(vsShaderPath);
-	const char* fsCode = LoadFileContent(fsShaderPath);
-	glShaderSource(vsShader, 1, &vsCode, 0);
-	glShaderSource(fsShader, 1, &fsCode, 0);
-	glCompileShader(vsShader);
-	glCompileShader(fsShader);
-	GLuint pragram = glCreateProgram();
-	glAttachShader(pragram, vsShader);
-	glAttachShader(pragram, fsShader);
-	glLinkProgram(pragram);
-	glDetachShader(pragram, vsShader);
-	glDetachShader(pragram, fsShader);
-	glDeleteShader(vsShader);
-	glDeleteShader(fsShader);
-	return pragram;
-}
-
+glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+glm::mat4 projection = glm::perspective(45.0f, 1280 / 800.0f, 0.1f, 1000.0f);
 
 LRESULT CALLBACK WinPro(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -84,7 +42,7 @@ LRESULT CALLBACK WinPro(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
 	//重定向输出日志
-	freopen("main.log", "w", stdout);
+	//freopen("main.log", "w", stdout);
 
 	//初始化参数
 	int width = 1280;
@@ -153,55 +111,27 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	glewInit();
 
 	//编译链接GPU Program
-	GLuint program = CreateGPUProgram("sample.vs", "sample.fs");
+	GLuint program = CreateGPUProgram("../res/shader/sample.vs", "../res/shader/sample.fs");
+
+	//加载Obj文件
+	Vertex* pVertex;
+	unsigned int vertexSize;
+	unsigned int* pIndex;
+	unsigned int indexSize;
+	LoadObjModel("../res/model/Sphere.obj", &pVertex, vertexSize, &pIndex, indexSize);
 
 	//计算参数位置
-	GLuint posLocation, colorLocation, MLocation, VLocation, PLocation;
+	GLuint posLocation, texcoordLocation, normalLocation, MLocation, VLocation, PLocation;
 	posLocation = glGetAttribLocation(program, "pos");
-	colorLocation = glGetAttribLocation(program, "color");
+	texcoordLocation = glGetAttribLocation(program, "texcoord");
+	normalLocation = glGetAttribLocation(program, "normal");
 	MLocation = glGetUniformLocation(program, "M");
 	VLocation = glGetUniformLocation(program, "V");
 	PLocation = glGetUniformLocation(program, "P");
 
-	//上传顶点数据到GPU
-	Vertex vertex[3];
-	vertex[0].pos[0] = 0.0f;
-	vertex[0].pos[1] = 0.0f;
-	vertex[0].pos[2] = -100.0f;
-	vertex[0].color[0] = 1.0f;
-	vertex[0].color[1] = 1.0f;
-	vertex[0].color[2] = 1.0f;
-	vertex[0].color[3] = 1.0f;
-
-	vertex[1].pos[0] = 10.0f;
-	vertex[1].pos[1] = 0.0f;
-	vertex[1].pos[2] = -100.0f;
-	vertex[1].color[0] = 1.0f;
-	vertex[1].color[1] = 1.0f;
-	vertex[1].color[2] = 1.0f;
-	vertex[1].color[3] = 1.0f;
-
-	vertex[2].pos[0] = 0.0f;
-	vertex[2].pos[1] = 10.0f;
-	vertex[2].pos[2] = -100.0f;
-	vertex[2].color[0] = 1.0f;
-	vertex[2].color[1] = 1.0f;
-	vertex[2].color[2] = 1.0f;
-	vertex[2].color[3] = 1.0f;
-
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 100, 0, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * 3, vertex);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	unsigned int indexes[] = { 0, 1, 2 };
-	GLuint vio;
-	glGenBuffers(1, &vio);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vio);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 3, indexes, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//创建缓冲区对象
+	GLuint vbo = CreateGLBufferObject(GL_ARRAY_BUFFER, sizeof(Vertex) * vertexSize, GL_STATIC_DRAW, pVertex);
+	GLuint ibo = CreateGLBufferObject(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indexSize, GL_STATIC_DRAW, pIndex);
 
 	glClearColor(41.0f / 255.0f, 71.0f / 255.0f, 121.0f / 255.0f, 1.0f);
 
@@ -224,30 +154,33 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			DispatchMessage(&msg);
 		}
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//调用GPU Program
 		glUseProgram(program);
-		glUniformMatrix4fv(MLocation, 1, GL_FALSE, identity);
+		glUniformMatrix4fv(MLocation, 1, GL_FALSE, glm::value_ptr(model));
 		glUniformMatrix4fv(VLocation, 1, GL_FALSE, identity);
 		glUniformMatrix4fv(PLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glEnableVertexAttribArray(posLocation);
 		glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)0);
-		glEnableVertexAttribArray(colorLocation);
-		glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(float) * 3));
+		glEnableVertexAttribArray(texcoordLocation);
+		glVertexAttribPointer(texcoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(float) * 3));
+		glEnableVertexAttribArray(normalLocation);
+		glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(float) * 5));
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vio);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		
 		glUseProgram(0);
 
 		SwapBuffers(dc);
 	}
 
-	fclose(stdout);
+	//glDeleteProgram(program);
+
+	//fclose(stdout);
 	return 0;
 }
