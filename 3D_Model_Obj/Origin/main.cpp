@@ -22,7 +22,7 @@ float identity[] = {
 	0, 0, 0, 1,
 };
 
-glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -10.0f, -50.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.3f, 0.3f, 0.3f)) * glm::rotate(glm::mat4(1.0f), -90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 glm::mat4 projection = glm::perspective(45.0f, 1280 / 800.0f, 0.1f, 1000.0f);
 
 LRESULT CALLBACK WinPro(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -118,7 +118,7 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	unsigned int vertexSize;
 	unsigned int* pIndex;
 	unsigned int indexSize;
-	LoadObjModel("../res/model/Sphere.obj", &pVertex, vertexSize, &pIndex, indexSize);
+	LoadObjModel("../res/model/niutou.obj", &pVertex, vertexSize, &pIndex, indexSize);
 
 	//计算参数位置
 	GLuint posLocation, texcoordLocation, normalLocation, MLocation, VLocation, PLocation;
