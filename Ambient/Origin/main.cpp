@@ -22,9 +22,9 @@ float identity[] = {
 	0, 0, 0, 1,
 };
 
-glm::mat4 model =	glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, -4.0f)) *
-					glm::rotate(glm::mat4(1.0f), -80.0f, glm::vec3(0.0f, 1.0f, 0.0f)) *
-					glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
+glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, -2.0f)) *
+glm::rotate(glm::mat4(1.0f), -3.14f / 2, glm::vec3(0.0f, 1.0f, 0.0f)) *
+glm::scale(glm::mat4(1.0f), glm::vec3(0.01f, 0.01f, 0.01f));
 					
 glm::mat4 projection = glm::perspective(45.0f, 1280 / 800.0f, 0.1f, 1000.0f);
 
