@@ -27,7 +27,7 @@ glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 1.0f));
 glm::mat4 projection = glm::perspective(45.0f, 1280 / 800.0f, 0.1f, 1000.0f);
 glm::mat4 uiMatrix = glm::ortho(-640.0f, 640.0f, -400.0f, 400.0f);
 glm::mat4 normalMatrix = glm::inverseTranspose(model);
-float angle = 0.0f;
+
 
 LRESULT CALLBACK WinPro(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -146,6 +146,8 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//启用混合
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glViewport(0, 0, 640.0f, 400);
 
 	//显示和更新窗口
 	ShowWindow(hWnd, SW_SHOW);
