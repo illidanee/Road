@@ -6,9 +6,9 @@ layout(std140, binding = 1)buffer Vel {
 	vec4 vel[];
 };
 
-layout(local_size_x = 128, local_size_y = 1, local_size_z = 1)in;
 uniform sampler3D U_MainTexture;//noise texture
 
+layout(local_size_x = 128, local_size_y = 1, local_size_z = 1)in;
 
 vec3  CalV(vec3 p)
 {
@@ -34,7 +34,7 @@ void main()
 	v += CalV(p*10.0)*0.001;
 
 	p += v;
-	v *= 0.95;
+	v *= 0.9;
 
 	pos[particleID] = vec4(p, 1.0);
 	vel[particleID] = vec4(v, 1.0);
