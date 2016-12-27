@@ -1,16 +1,16 @@
 #version 430
+
 layout(std140, binding = 0)buffer Pos {
 	vec4 pos[];
 };
 layout(std140, binding = 1)buffer Vel {
 	vec4 vel[];
 };
-
-uniform sampler3D U_MainTexture;//noise texture
+uniform sampler3D U_MainTexture;
 
 layout(local_size_x = 128, local_size_y = 1, local_size_z = 1)in;
 
-vec3  CalV(vec3 p)
+vec3 CalV(vec3 p)
 {
 	vec3 vel = vec3(0.0);
 	float gain = 1.0;
