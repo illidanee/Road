@@ -172,26 +172,16 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 // ------------------------------------------------------------------------------ 
 	//创建 VBO
-	FloatBundle vertex[3];
+	FloatBundle vertex[1];
 	vertex[0].v[0] = 0.0f;
 	vertex[0].v[1] = 0.0f;
 	vertex[0].v[2] = 0.0f;
 	vertex[0].v[3] = 1.0f;
 
-	vertex[1].v[0] = 0.5f;
-	vertex[1].v[1] = 0.0f;
-	vertex[1].v[2] = 0.0f;
-	vertex[1].v[3] = 1.0f;
-
-	vertex[2].v[0] = 0.0f;
-	vertex[2].v[1] = 0.5f;
-	vertex[2].v[2] = 0.0f;
-	vertex[2].v[3] = 1.0f;
-
-	GLuint vertexVBO = CreateGLBufferObject(GL_ARRAY_BUFFER, sizeof(FloatBundle) * 3, GL_STATIC_DRAW, vertex);
+	GLuint vertexVBO = CreateGLBufferObject(GL_ARRAY_BUFFER, sizeof(FloatBundle) * 1, GL_STATIC_DRAW, vertex);
 
 	//创建 TFO
-	GLuint outVertexVBO = CreateGLBufferObject(GL_ARRAY_BUFFER, sizeof(FloatBundle) * 3, GL_STATIC_DRAW, nullptr);
+	GLuint outVertexVBO = CreateGLBufferObject(GL_ARRAY_BUFFER, sizeof(FloatBundle) * 1, GL_STATIC_DRAW, nullptr);
 	GLuint tfo = CreateTFO(outVertexVBO);
 
 	//创建 TFO Program
@@ -216,8 +206,8 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		glUniformMatrix4fv(mLocation, 1, GL_FALSE, glm::value_ptr(model));
 		
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfo);
-		glBeginTransformFeedback(GL_TRIANGLES);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBeginTransformFeedback(GL_POINTS);
+		glDrawArrays(GL_POINTS, 0, 1);
 		glEndTransformFeedback();
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 
@@ -264,13 +254,15 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		glUniformMatrix4fv(PLocation, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(VLocation, 1, GL_FALSE, identity);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_POINTS, 0, 1);
 		glUseProgram(0);
 	};
 
 	//初始状态
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glEnable(GL_POINT_SPRITE);
+	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	//显示和更新窗口
 	ShowWindow(hWnd, SW_SHOW);
