@@ -253,15 +253,17 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		glBindBuffer(GL_ARRAY_BUFFER, outVertexVBO);
 		glEnableVertexAttribArray(worldPosLocation);
 		glVertexAttribPointer(worldPosLocation, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+		
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glUniform1d(textureLocation, 0);
-
+		
 		glUniformMatrix4fv(PLocation, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(VLocation, 1, GL_FALSE, identity);
 
 		glDrawArrays(GL_POINTS, 0, 1);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glUseProgram(0);
 	};
 
