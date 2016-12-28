@@ -205,7 +205,6 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	auto CallTFOProgram = [&]()->void
 	{
 		glEnable(GL_RASTERIZER_DISCARD);
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfo);
 
 		glUseProgram(tfoProgram);
 		
@@ -216,13 +215,14 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		glUniformMatrix4fv(mLocation, 1, GL_FALSE, glm::value_ptr(model));
 		
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfo);
 		glBeginTransformFeedback(GL_TRIANGLES);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glEndTransformFeedback();
-		
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+
 		glUseProgram(0);
 
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 		glDisable(GL_RASTERIZER_DISCARD);
 	};
 	

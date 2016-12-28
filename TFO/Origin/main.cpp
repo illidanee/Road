@@ -227,7 +227,6 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	//调用GPU Program
 	glUseProgram(tfoProgram);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
 	glEnableVertexAttribArray(posLocation);
@@ -236,14 +235,15 @@ int __stdcall WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	glUniformMatrix4fv(mLocation, 1, GL_FALSE, glm::value_ptr(model));
 
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, TFO);
 	glBeginTransformFeedback(GL_TRIANGLES);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	glEndTransformFeedback();
-	
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glUseProgram(0);
 
-	
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glEndTransformFeedback();
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+
+	glUseProgram(0);
 
 	//查看 outVertexVBO 输出内容
 	glBindBuffer(GL_ARRAY_BUFFER, outVertexVBO);
